@@ -1,0 +1,23 @@
+{
+  "name": "learning-backend",
+  "version": "1.0.0",
+  "description": "a platform to manage projects ",
+  "keywords": [
+    "udemy",
+    "course",
+    "backend",
+    "mango",
+    "node",
+    "python"
+  ],
+  "license": "ISC",
+  "author": "Archita Garg",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "3.8.1"
+  }
+}
