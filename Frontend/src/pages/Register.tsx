@@ -25,7 +25,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://project-management-system-qnbr.onrender.com", {
+      const response = await fetch("https://project-management-system-qnbr.onrender.com/api/v1/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
