@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,21 +10,41 @@ import { useTheme } from "@/components/ThemeProvider";
 import logo from "@/assets/logo.png";
 
 const Register = () => {
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ fullName, username: username.toLowerCase(), email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      toast({ title: "Account created!", description: "Please verify your email to continue." });
+      navigate("/login");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
       setLoading(false);
-      toast({ title: "Demo Mode", description: "Connect a backend to enable registration." });
-    }, 1000);
+    }
   };
 
   return (
@@ -57,8 +77,13 @@ const Register = () => {
         <div className="bg-card rounded-2xl border border-border shadow-xl shadow-foreground/5 p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required className="rounded-xl h-11" />
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input id="fullName" placeholder="John Doe" value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-xl h-11" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" placeholder="johndoe" value={username} onChange={(e) => setUsername(e.target.value)} required className="rounded-xl h-11" />
+              <p className="text-xs text-muted-foreground">Lowercase, at least 3 characters</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

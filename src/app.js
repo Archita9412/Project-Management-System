@@ -11,7 +11,9 @@ const app = express();
 
 // Middlewares FIRST — Fix for route-before-middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
+  origin: function(origin, callback) {
+    callback(null, true);
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -28,6 +30,18 @@ app.use("/api/v1/projects", projectRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to basecampy");
+});
+
+// Global error handler — must be LAST
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Something went wrong";
+  return res.status(statusCode).json({
+    statusCode,
+    message,
+    success: false,
+    errors: err.errors || [],
+  });
 });
 
 export default app;

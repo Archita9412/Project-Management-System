@@ -12,14 +12,18 @@ import crypto from "crypto"; // Fix #4 — was missing
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
+    console.log("Finding user:", userId);
     const user = await User.findById(userId);
+    console.log("User found:", user?.username);
     const accessToken = user.generateAccessToken();
+    console.log("Access token generated");
     const refreshToken = user.generateRefreshToken();
-
+    console.log("Refresh token generated");
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
+    console.log("ERROR:", error.message);
     throw new ApiError(500, "Something went wrong while generating access token");
   }
 };
